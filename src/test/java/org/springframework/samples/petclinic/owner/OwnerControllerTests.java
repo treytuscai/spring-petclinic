@@ -100,7 +100,6 @@ class OwnerControllerTests {
 		george.getPet("Max").getVisits().add(visit);
 
 	}
-	
 
 	@Test
 	void initCreationForm() throws Exception {
