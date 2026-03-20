@@ -1,10 +1,19 @@
 # Spring PetClinic Sample Application [![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml)[![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml)
 
 ## Run Jenkins Service
+
+Run Jenkins service using docker
 ```bash
 docker run -d --name jenkins \
   -p 8081:8080 -p 50000:50000 \
   jenkins/jenkins:lts
+```
+
+Get Jenkins Admin password if needed
+```bash
+docker ps
+# Find the Jenkins container name, then run:
+docker exec -it <jenkins-container-name> cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
