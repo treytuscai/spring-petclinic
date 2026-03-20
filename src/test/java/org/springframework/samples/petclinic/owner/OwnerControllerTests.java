@@ -101,13 +101,13 @@ class OwnerControllerTests {
 
 	}
 
-	@Test
-	void initCreationFormWrong() throws Exception {
-		mockMvc.perform(get("/owners/new"))
-			.andExpect(!status().isOk()) // this line is wrong
-			.andExpect(model().attributeExists("owner"))
-			.andExpect(view().name("owners/createOrUpdateOwnerForm"));
-	}
+	// @Test
+	// void initCreationFormWrong() throws Exception {
+	// 	mockMvc.perform(get("/owners/new"))
+	// 		.andExpect(!status().isOk()) // this line is wrong
+	// 		.andExpect(model().attributeExists("owner"))
+	// 		.andExpect(view().name("owners/createOrUpdateOwnerForm"));
+	// }
 
 	@Test
 	void initCreationForm() throws Exception {
