@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('H/1 * * * *')  // check the Git repo for changes about every 5 minutes
+        pollSCM('* * * * *')  // check the Git repo for changes about every minutes
     }
 
     options {
