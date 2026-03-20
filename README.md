@@ -16,6 +16,20 @@ docker ps
 docker exec -it <jenkins-container-name> cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
+Do this in Jenkins UI:
+
+1. Open your Jenkins dashboard in the browser.
+2. Click New Item.
+3. Enter a job name, for example spring-petclinic.
+4. Select Pipeline.
+5. Click OK.
+   
+Then configure the job:
+1. In the Pipeline section, set Definition to Pipeline script from SCM
+2. Set SCM to Git
+3. In Repository URL, paste your fork URL
+4. If the repo is private, add credentials
+
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
 
 ## Understanding the Spring Petclinic application with a few diagrams
