@@ -30,6 +30,9 @@ Then configure the job:
 3. In Repository URL, paste your fork URL
 4. If the repo is private, add credentials
 
+<img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
+
+
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
 
 ## Understanding the Spring Petclinic application with a few diagrams
