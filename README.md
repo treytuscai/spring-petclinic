@@ -29,6 +29,11 @@ Then configure the job:
 2. Set SCM to Git
 3. In Repository URL, paste your fork URL
 4. If the repo is private, add credentials
+5. In Branches to build, enter yourn branch name
+6. In Script Path, enter:
+```bash
+Jenkinsfile
+```
 
 <img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
 
