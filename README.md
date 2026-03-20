@@ -8,6 +8,7 @@ docker run -d --name jenkins \
   -p 8081:8080 -p 50000:50000 \
   jenkins/jenkins:lts
 ```
+Open http://localhost:8081 to access Jenkins dashboard
 
 Get Jenkins Admin password if needed
 ```bash
