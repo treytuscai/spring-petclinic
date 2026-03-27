@@ -18,6 +18,8 @@
 
     - name: Stop old app if running
       shell: "pkill -f 'java -jar {{ app_dir }}/{{ app_jar }}' || true"
+      failed_when: false
+      changed_when: false
 
     - name: Start app in background
       shell: "nohup java -jar {{ app_dir }}/{{ app_jar }} > {{ app_dir }}/petclinic.log 2>&1 &"
