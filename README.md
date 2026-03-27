@@ -39,6 +39,29 @@ Then configure the job:
 Jenkinsfile
 ```
 
+
+##  Ansible on Jenkins
+
+Run a Linux Production Server Container
+```bash
+cd prod-server/
+
+docker build -t petclinic-prod-server .
+docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-server
+```
+
+Install Ansible Where Jenkins Can Use It
+```bash
+docker exec -u root -it jenkins bash
+apt-get update
+apt-get install -y ansible sshpass
+exit
+```
+
+
+
+
+
 <img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
 
 
