@@ -28,6 +28,16 @@ pipeline {
                 sh './mvnw --batch-mode clean test'
             }
         }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh '''
+                    ./mvnw sonar:sonar \
+                        -Dsonar.projectKey=spring-petclinic
+                    '''
+                }
+            }
+        }
     }
 
     post {
