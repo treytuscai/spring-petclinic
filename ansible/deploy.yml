@@ -1,0 +1,23 @@
+- hosts: prod
+  become: no
+  vars:
+    app_dir: /opt/petclinic
+    app_jar: spring-petclinic.jar
+
+  tasks:
+    - name: Ensure app directory exists
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+
+    - name: Copy jar to production server
+      copy:
+        src: ../target/spring-petclinic-4.0.0-SNAPSHOT.jar
+        dest: "{{ app_dir }}/{{ app_jar }}"
+        mode: "0755"
+
+    - name: Stop old app if running
+      shell: "pkill -f 'java -jar {{ app_dir }}/{{ app_jar }}' || true"
+
+    - name: Start app in background
+      shell: "nohup java -jar {{ app_dir }}/{{ app_jar }} > {{ app_dir }}/petclinic.log 2>&1 &"
