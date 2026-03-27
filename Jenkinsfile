@@ -37,7 +37,7 @@ pipeline {
 
         stage('Deploy to Prod') {
             steps {
-                sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
+                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
             }
         }
     }
