@@ -40,6 +40,8 @@ Then configure the job:
 Jenkinsfile
 ```
 
+<img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
+
 
 ##  Ansible on Jenkins
 
@@ -66,10 +68,6 @@ If some new commit appeared. After Jenkins runs successfully, open:
 http://localhost:8082
 
 
-
-
-
-<img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
 
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
