@@ -28,6 +28,18 @@ pipeline {
                 sh './mvnw --batch-mode clean test'
             }
         }
+
+        stage('Package') {
+            steps {
+                sh './mvnw --batch-mode package -DskipTests'
+            }
+        }
+
+        stage('Deploy to Prod') {
+            steps {
+                sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
+            }
+        }
     }
 
     post {
