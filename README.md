@@ -8,7 +8,8 @@ docker run -d --name jenkins \
   -p 8081:8080 -p 50000:50000 \
   jenkins/jenkins:lts
 
-## docker start jenkins
+# If already exists
+# docker start jenkins
 
 ```
 Open http://localhost:8081 to access Jenkins dashboard
@@ -48,6 +49,9 @@ cd prod-server/
 
 docker build -t petclinic-prod-server .
 docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-server
+
+# If already exists
+# docker start petclinic-prod
 ```
 
 Install Ansible Where Jenkins Can Use It
@@ -57,6 +61,9 @@ apt-get update
 apt-get install -y ansible sshpass
 exit
 ```
+
+If some new commit appeared. After Jenkins runs successfully, open:
+http://localhost:8082
 
 
 
