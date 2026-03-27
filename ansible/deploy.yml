@@ -1,25 +1,33 @@
 - hosts: prod
+  # Do not use sudo/become for these tasks.
   become: no
+
   vars:
+    # Directory on the production server where the app will live.
     app_dir: /opt/petclinic
+    # Name to use for the deployed jar file.
     app_jar: spring-petclinic.jar
 
   tasks:
     - name: Ensure app directory exists
       file:
+        # Create the application directory if it does not already exist.
         path: "{{ app_dir }}"
         state: directory
 
     - name: Copy jar to production server
       copy:
+        # Copy the jar built by Jenkins to the production server.
         src: ../target/spring-petclinic-4.0.0-SNAPSHOT.jar
         dest: "{{ app_dir }}/{{ app_jar }}"
         mode: "0755"
 
     - name: Stop old app if running
       shell: "pkill -f 'java -jar {{ app_dir }}/{{ app_jar }}' || true"
+      # Do not fail if the process is not running or pkill returns a non-zero code.
       failed_when: false
       changed_when: false
 
     - name: Start app in background
       shell: "nohup java -jar {{ app_dir }}/{{ app_jar }} > {{ app_dir }}/petclinic.log 2>&1 &"
+      # Start the Spring Boot app in the background and write logs to petclinic.log.
