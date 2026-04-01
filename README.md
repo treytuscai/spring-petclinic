@@ -87,6 +87,134 @@ or
 docker compose up postgres
 ```
 
+## Local DevSecOps Stack
+
+This repository includes a local DevSecOps setup for running PetClinic together with Jenkins and the Burp review flow on one machine.
+
+The stack includes:
+
+- Jenkins with Docker CLI, Blue Ocean, HTML Publisher, Prometheus metrics, and SonarQube Scanner plugins
+- SonarQube Community Build
+- Prometheus
+- Grafana
+- Burp Suite Community desktop container
+- a `petclinic-qa` target for pre-production testing
+
+### Start the platform services
+
+```bash
+docker compose --profile devsecops up -d --build jenkins sonarqube prometheus grafana burp
+```
+
+Service URLs:
+
+- Jenkins: <http://localhost:8081>
+- SonarQube: <http://localhost:9000>
+- Prometheus: <http://localhost:9090>
+- Grafana: <http://localhost:3000>
+- Burp noVNC desktop: <http://localhost:6080/vnc.html>
+
+### How Burp fits into the pipeline
+
+Burp Suite Community is used as a manual review step in the Jenkins pipeline.
+
+The flow is:
+
+1. Jenkins builds the application
+2. Jenkins starts the QA copy of PetClinic
+3. Jenkins starts the Burp desktop container
+4. The pipeline pauses and waits for a tester to use Burp
+5. The tester saves review evidence
+6. Jenkins collects and publishes that evidence
+
+Burp Community is not doing unattended scanning here. Jenkins only launches the Burp desktop and waits for a person to complete the review.
+
+### Burp Community requirement
+
+The Burp container does not ship with the Burp binary, so before starting the full stack, download the latest Burp Suite Community JAR from the official PortSwigger release page and place it at:
+
+```bash
+burp/downloads/burpsuite_community.jar
+```
+
+PortSwigger release reference:
+
+- <https://portswigger.net/burp/releases>
+
+The JAR is kept out of the repository, so each person running the stack needs to place it there locally.
+
+### Start the QA target
+
+Build the application jar first:
+
+```bash
+./mvnw --batch-mode package -DskipTests
+```
+
+Then start the QA target and PostgreSQL:
+
+```bash
+docker compose --profile qa up -d --build postgres petclinic-qa
+```
+
+The QA application is exposed at <http://localhost:18080/>.
+
+This is the version of the app Burp is meant to test during the pipeline run.
+
+### Jenkins pipeline behavior
+
+The included `Jenkinsfile` does the following:
+
+1. watches the repository for changes
+2. builds and tests PetClinic
+3. optionally runs SonarQube analysis
+4. starts the QA copy of the application
+5. starts the Burp Community desktop when Burp review is enabled
+6. pauses for the Burp review
+7. collects the Burp evidence files
+8. publishes the Burp evidence in Jenkins
+9. optionally continues to deployment if the Ansible files are present
+
+If Burp review is turned on, the pipeline starts Burp and waits at the review step until the evidence files are saved.
+
+### Burp evidence bundle
+
+Burp Community is integrated as a manual security gate. Jenkins expects the Burp review to produce:
+
+- `summary.html`
+- `notes.md` or `notes.txt`
+- screenshots and any supporting evidence
+
+The shared artifact directory inside the Burp container is:
+
+```bash
+/workspace/burp-artifacts
+```
+
+That directory is mounted into Jenkins, so files saved there can be collected by the pipeline.
+
+If you want to generate a Jenkins-publishable HTML page from structured findings, use:
+
+```bash
+python3 scripts/generate_burp_summary.py \
+  --input tests/fixtures/burp-findings.json \
+  --output burp-artifacts/summary.html
+```
+
+### Why the scripts are there
+
+`scripts/wait-for-url.sh`
+
+- waits for an application URL to respond
+- used in the pipeline so Jenkins does not move on before the QA app is actually ready
+- mainly used in the `Start QA Target` stage
+
+`scripts/generate_burp_summary.py`
+
+- turns a JSON findings file into a simple HTML summary
+- helps produce a report Jenkins can publish directly
+- useful when you want something cleaner than a handwritten HTML file
+
 ## Test Applications
 
 At development time we recommend you use the test applications set up as `main()` methods in `PetClinicIntegrationTests` (using the default H2 database and also adding Spring Boot Devtools), `MySqlTestApplication` and `PostgresIntegrationTests`. These are set up so that you can run the apps in your IDE to get fast feedback and also run the same classes as integration tests against the respective database. The MySql integration tests use Testcontainers to start the database in a Docker container, and the Postgres tests use Docker Compose to do the same thing.
