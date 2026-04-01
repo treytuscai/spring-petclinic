@@ -89,29 +89,23 @@ docker compose up postgres
 
 ## Local DevSecOps Stack
 
-This repository includes a local DevSecOps setup for running PetClinic together with Jenkins and the Burp review flow on one machine.
+This repository includes a small local setup for running PetClinic together with Jenkins and a Burp Community review flow on one machine.
 
 The stack includes:
 
-- Jenkins with Docker CLI, Blue Ocean, HTML Publisher, Prometheus metrics, and SonarQube Scanner plugins
-- SonarQube Community Build
-- Prometheus
-- Grafana
+- Jenkins with the plugins needed for the pipeline and Burp evidence publishing
 - Burp Suite Community desktop container
 - a `petclinic-qa` target for pre-production testing
 
 ### Start the platform services
 
 ```bash
-docker compose --profile devsecops up -d --build jenkins sonarqube prometheus grafana burp
+docker compose --profile devsecops up -d --build jenkins burp
 ```
 
 Service URLs:
 
 - Jenkins: <http://localhost:8081>
-- SonarQube: <http://localhost:9000>
-- Prometheus: <http://localhost:9090>
-- Grafana: <http://localhost:3000>
 - Burp noVNC desktop: <http://localhost:6080/vnc.html>
 
 ### How Burp fits into the pipeline
@@ -167,13 +161,11 @@ The included `Jenkinsfile` does the following:
 
 1. watches the repository for changes
 2. builds and tests PetClinic
-3. optionally runs SonarQube analysis
-4. starts the QA copy of the application
-5. starts the Burp Community desktop when Burp review is enabled
-6. pauses for the Burp review
-7. collects the Burp evidence files
-8. publishes the Burp evidence in Jenkins
-9. optionally continues to deployment if the Ansible files are present
+3. starts the QA copy of the application
+4. starts the Burp Community desktop when Burp review is enabled
+5. pauses for the Burp review
+6. collects the Burp evidence files
+7. publishes the Burp evidence in Jenkins
 
 If Burp review is turned on, the pipeline starts Burp and waits at the review step until the evidence files are saved.
 
@@ -197,7 +189,7 @@ If you want to generate a Jenkins-publishable HTML page from structured findings
 
 ```bash
 python3 scripts/generate_burp_summary.py \
-  --input tests/fixtures/burp-findings.json \
+  --input findings.json \
   --output burp-artifacts/summary.html
 ```
 

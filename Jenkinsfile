@@ -2,28 +2,23 @@ pipeline {
     agent any
 
     triggers {
-        pollSCM('H/2 * * * *')
+        pollSCM('* * * * *')
     }
 
     options {
-        timestamps()
         disableConcurrentBuilds()
     }
 
     parameters {
-        booleanParam(name: 'RUN_SONARQUBE', defaultValue: false, description: 'Run SonarQube analysis if SONAR_TOKEN is configured.')
         booleanParam(name: 'RUN_BURP_REVIEW', defaultValue: true, description: 'Run the Burp Community manual review gate.')
-        booleanParam(name: 'RUN_DEPLOY', defaultValue: false, description: 'Run the Ansible deploy stage if ansible assets exist.')
     }
 
     environment {
         MAVEN_OPTS = '-Djava.awt.headless=true'
-        COMPOSE_PROFILES = 'devsecops,qa'
         QA_TARGET_URL = 'http://petclinic-qa:8080/'
         BURP_UI_URL = 'http://localhost:6080/vnc.html'
         BURP_SHARED_DIR = '/burp-artifacts'
         BURP_WORKSPACE_DIR = 'burp-artifacts'
-        SONAR_HOST_URL = 'http://sonarqube:9000'
     }
 
     stages {
@@ -43,26 +38,6 @@ pipeline {
         stage('Package') {
             steps {
                 sh './mvnw --batch-mode package -DskipTests'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            when {
-                expression { return params.RUN_SONARQUBE }
-            }
-            steps {
-                sh '''
-                    if [ -z "${SONAR_TOKEN:-}" ]; then
-                      echo "SONAR_TOKEN is required when RUN_SONARQUBE=true."
-                      exit 1
-                    fi
-
-                    ./mvnw --batch-mode sonar:sonar \
-                      -DskipTests \
-                      -Dsonar.projectKey=spring-petclinic \
-                      -Dsonar.host.url=${SONAR_HOST_URL} \
-                      -Dsonar.token=${SONAR_TOKEN}
-                '''
             }
         }
 
@@ -139,17 +114,6 @@ Resume this pipeline only after the Burp evidence bundle has been saved.""", ok:
             }
         }
 
-        stage('Deploy to Production') {
-            when {
-                allOf {
-                    expression { return params.RUN_DEPLOY }
-                    expression { return fileExists('ansible/deploy.yml') && fileExists('ansible/inventory.ini') }
-                }
-            }
-            steps {
-                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
-            }
-        }
     }
 
     post {

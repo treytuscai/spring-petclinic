@@ -1,8 +1,4 @@
-blueocean:1.27.25
-docker-workflow:634.vedc7242b_eda_7
 htmlpublisher:427
 pipeline-model-definition:2.2277.v00573e73ddf1
 workflow-aggregator:608.v67378e9d3db_1
 pipeline-stage-view:2.38
-prometheus:852.v317db_5d17a_b_0
-sonar:2.18.2
