@@ -84,7 +84,7 @@ The Maven build needs a token to authenticate with SonarQube:
 
 From the project root, run:
 ```bash
-mvn clean verify sonar:sonar \
+./mvnw clean verify sonar:sonar \
   -Dsonar.projectKey=spring-petclinic \
   -Dsonar.host.url=http://localhost:9000 \
   -Dsonar.login=<YOUR_TOKEN>
