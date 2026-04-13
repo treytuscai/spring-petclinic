@@ -120,7 +120,6 @@ Paste the password into the browser to unlock Jenkins.
 3. Once on the Jenkins dashboard, go to **Manage Jenkins** → **Plugins** → **Available plugins**
 4. Search for **Blue Ocean** and check the box
 5. Click **Install** and wait for it to complete
-6. Restart Jenkins when prompted, or go to `http://localhost:8080/restart`
 
 ### 6.3 Add SonarQube Token to Jenkins Credentials
 
