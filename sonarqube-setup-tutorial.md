@@ -139,7 +139,7 @@ docker compose up -d
 # 3. Open browser → http://localhost:9000 (admin / admin)
 
 # 4. Run analysis
-mvn clean verify sonar:sonar \
+./mvnw clean verify sonar:sonar \
   -Dsonar.projectKey=spring-petclinic \
   -Dsonar.host.url=http://localhost:9000 \
   -Dsonar.login=<YOUR_TOKEN>
