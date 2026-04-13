@@ -19,12 +19,14 @@ services:
       - POSTGRES_PASSWORD=petclinic
       - POSTGRES_USER=petclinic
       - POSTGRES_DB=petclinic
+    volumes:
+      - "./init-sonar.sql:/docker-entrypoint-initdb.d/init-sonar.sql"
   sonarqube:
     image: sonarqube:lts-community
     ports:
       - "9000:9000"
     environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/petclinic
+      - SONAR_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
       - SONAR_JDBC_USERNAME=petclinic
       - SONAR_JDBC_PASSWORD=petclinic
     depends_on:
