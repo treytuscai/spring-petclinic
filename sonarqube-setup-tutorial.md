@@ -173,7 +173,7 @@ The `Jenkinsfile` in the `yen-sonarqube` branch defines four stages:
 
 ---
 
-## 8. Run the Analysis Manually (Optional)
+## 8. Run the Analysis Manually on SonarQube
 
 If you want to trigger SonarQube analysis directly without Jenkins, run from the project root:
 
