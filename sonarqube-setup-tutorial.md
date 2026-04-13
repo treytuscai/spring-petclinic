@@ -88,7 +88,7 @@ From the project root, run:
   -Dsonar.projectKey=spring-petclinic \
   -Dsonar.host.url=http://localhost:9000 \
   -Dsonar.login=<YOUR_TOKEN> \
-  -Dtest="!PostgresIntegrationTests" \
+  -Dtest='!PostgresIntegrationTests' \
   -DfailIfNoTests=false
 ```
 
