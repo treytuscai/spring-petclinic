@@ -87,7 +87,9 @@ From the project root, run:
 ./mvnw clean verify sonar:sonar \
   -Dsonar.projectKey=spring-petclinic \
   -Dsonar.host.url=http://localhost:9000 \
-  -Dsonar.login=<YOUR_TOKEN>
+  -Dsonar.login=<YOUR_TOKEN> \
+  -Dtest="!PostgresIntegrationTests" \
+  -DfailIfNoTests=false
 ```
 
 Replace `<YOUR_TOKEN>` with the token from Step 5.
