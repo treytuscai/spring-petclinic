@@ -75,7 +75,7 @@ The Maven build needs a token to authenticate with SonarQube:
 
 1. Click your **avatar** (top-right) → **My Account**
 2. Go to the **Security** tab
-3. Under **Generate Tokens**, select ** Global Analysis Token** enter a name (e.g., `petclinic-token`) and click **Generate**
+3. Under **Generate Tokens**, select **Global Analysis Token** enter a name (e.g., `petclinic-token`) and click **Generate**
 4. **Copy the token immediately** — it won't be shown again
 
 ---
