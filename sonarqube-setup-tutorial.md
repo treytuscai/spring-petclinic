@@ -131,6 +131,7 @@ Paste the password into the browser to unlock Jenkins.
    - **Description:** SonarQube Token
 3. Click **Create**
 
+Note: The SonarQube Scanner plugin is required for the SonarQube servers section to appear in Jenkins System settings. Without it, you won't be able to configure the SonarQube server in Step 6.4.
 ### 6.4 Configure SonarQube Server in Jenkins
 
 1. Go to **Manage Jenkins** → **System**
