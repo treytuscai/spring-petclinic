@@ -95,9 +95,36 @@ Jenkins needs a token to authenticate with SonarQube:
 3. Under **Generate Tokens**, select **Global Analysis Token**, enter a name (e.g., `petclinic-token`) and click **Generate**
 4. **Copy the token immediately** — it won't be shown again
 
+### 5.3 Set Up Webhook for Jenkins
+
+The **Quality Gate** stage in the pipeline requires SonarQube to call back Jenkins when the analysis is complete. Without this webhook, Jenkins will wait and time out after 5 minutes.
+
+**Why it's needed:**
+```
+Jenkins triggers SonarQube analysis
+       ↓
+SonarQube runs the analysis
+       ↓
+SonarQube calls back Jenkins via webhook → "analysis done, here's the result"
+       ↓
+Jenkins marks Quality Gate as passed or failed ✅
+```
+
+**Steps:**
+1. Go to `http://localhost:9000`
+2. Click **Administration** → **Configuration** → **Webhooks**
+3. Click **Create** and fill in:
+   - **Name:** `Jenkins`
+   - **URL:** `http://jenkins:8080/sonarqube-webhook/`
+4. Click **Create**
+
+> **Important:** Use `http://jenkins:8080` (not `localhost`) because SonarQube needs to reach Jenkins via the Docker network.
+
 ---
 
 ## 6. Set Up Jenkins
+
+> **Note:** In newer Jenkins versions, **Manage Jenkins** is accessed via the **gear icon** (⚙️) in the top right toolbar, or go directly to `http://localhost:8080/manage`.
 
 ### 6.1 Unlock Jenkins
 
@@ -118,8 +145,12 @@ Paste the password into the browser to unlock Jenkins.
 1. On the **Customize Jenkins** screen, click **Install suggested plugins** and wait for it to finish
 2. Create your admin user when prompted
 3. Once on the Jenkins dashboard, go to **Manage Jenkins** → **Plugins** → **Available plugins**
-4. Search for **Blue Ocean** and check the box
-5. Click **Install** and wait for it to complete
+4. Search for **Blue Ocean**, check the box
+5. Search for **SonarQube Scanner**, check the box
+6. Click **Install** and wait for both to complete
+7. Restart Jenkins when prompted
+
+> **Note:** The **SonarQube Scanner** plugin is required for the **SonarQube servers** section to appear in Jenkins System settings. Without it, you won't be able to configure the SonarQube server in Step 6.4.
 
 ### 6.3 Add SonarQube Token to Jenkins Credentials
 
@@ -131,7 +162,6 @@ Paste the password into the browser to unlock Jenkins.
    - **Description:** SonarQube Token
 3. Click **Create**
 
-Note: The SonarQube Scanner plugin is required for the SonarQube servers section to appear in Jenkins System settings. Without it, you won't be able to configure the SonarQube server in Step 6.4.
 ### 6.4 Configure SonarQube Server in Jenkins
 
 1. Go to **Manage Jenkins** → **System**
@@ -144,17 +174,38 @@ Note: The SonarQube Scanner plugin is required for the SonarQube servers section
 
 > **Important:** Use `http://sonarqube:9000` (not `localhost:9000`) because Jenkins and SonarQube are both inside Docker and communicate via the Docker network.
 
-### 6.5 Create the Pipeline in Blue Ocean
+### 6.5 Set Up SonarQube Webhook
 
-1. open http://localhost:8080/blue to launch blue ocean
-2. Click **New Pipeline**
-3. Select **Git** as the source
-4. Enter the repository URL:
+The **Quality Gate** stage requires SonarQube to call back Jenkins when analysis is complete. Without this, Jenkins will time out after 5 minutes.
+
+1. Go to `http://localhost:9000`
+2. Click **Administration** → **Configuration** → **Webhooks**
+3. Click **Create** and fill in:
+   - **Name:** `Jenkins`
+   - **URL:** `http://jenkins:8080/sonarqube-webhook/`
+4. Click **Create**
+
+> **Important:** Use `http://jenkins:8080` (not `localhost`) because SonarQube reaches Jenkins via the Docker network.
+
+---
+
+### 6.6 Create the Pipeline in Blue Ocean
+
+Open Blue Ocean by going directly to:
+```
+http://localhost:8080/blue
+```
+
+> **Note:** In newer versions of Jenkins, Blue Ocean does not appear in the sidebar. Access it directly via the URL above.
+
+1. Click **New Pipeline**
+2. Select **Git** as the source
+3. Enter the repository URL:
    ```
    https://github.com/treytuscai/spring-petclinic.git
    ```
-5. Select the `yen-sonarqube` branch
-6. Click **Create Pipeline**
+4. Select the `yen-sonarqube` branch
+5. Click **Create Pipeline**
 
 Blue Ocean will detect the `Jenkinsfile` already in the branch and run the pipeline automatically.
 
@@ -169,11 +220,11 @@ The `Jenkinsfile` in the `yen-sonarqube` branch defines four stages:
 | **Checkout** | Pulls the latest code from the branch |
 | **Build and Test** | Compiles the project and runs all tests |
 | **SonarQube Analysis** | Sends results to SonarQube |
-| **Quality Gate** | Waits up to 5 minutes for SonarQube verdict; fails pipeline if it does not pass |
+| **Quality Gate** | Waits for SonarQube verdict via webhook; fails pipeline if it does not pass |
 
 ---
 
-## 8. Run the Analysis Manually on SonarQube
+## 8. Run the Analysis Manually (Optional)
 
 If you want to trigger SonarQube analysis directly without Jenkins, run from the project root:
 
@@ -229,8 +280,20 @@ Docker Desktop → Settings → Resources → Memory → set to **4GB or more** 
 - Check the container: `docker compose ps`
 - View logs: `docker compose logs jenkins`
 
+### Quality Gate times out after 5 minutes
+- The SonarQube webhook is not set up. Follow Step 5.3 to add the webhook.
+- Make sure the webhook URL is `http://jenkins:8080/sonarqube-webhook/` (not `localhost`)
+
+### Jenkins pipeline SonarQube Analysis fails with "Not authorized"
+- The SonarQube token is missing or not linked to the Jenkins SonarQube server config
+- Go to **Manage Jenkins** → **System** → **SonarQube servers** and verify the token is selected
+- If the token is expired, generate a new one in SonarQube and update the Jenkins credential
+
 ### Jenkins pipeline can't reach SonarQube
 - Make sure you used `http://sonarqube:9000` (not `localhost`) in the Jenkins SonarQube server config
+
+### Can't find "Manage Jenkins"
+- Click the **gear icon** (⚙️) in the top right, or go to `http://localhost:8080/manage`
 
 ### Build fails with authentication error
 - Double-check the SonarQube token was copied correctly (no extra spaces)
@@ -251,8 +314,18 @@ cd spring-petclinic && git checkout yen-sonarqube
 # 2. Start everything
 docker compose up -d
 
-# 3. SonarQube → http://localhost:9000 (admin / admin) — generate token
-# 4. Jenkins   → http://localhost:8080 — unlock, install Blue Ocean, add token, create pipeline
+# 3. SonarQube → http://localhost:9000 (admin / admin)
+#    - Change password
+#    - Generate Global Analysis Token
+#    - Add webhook: Administration → Configuration → Webhooks
+#      URL: http://jenkins:8080/sonarqube-webhook/
+
+# 4. Jenkins → http://localhost:8080
+#    - Unlock with: docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+#    - Install plugins: Blue Ocean + SonarQube Scanner
+#    - Add sonar-token credential
+#    - Configure SonarQube server (http://sonarqube:9000)
+#    - Create pipeline at http://localhost:8080/blue
 
 # 5. (Optional) Run analysis manually
 ./mvnw clean verify sonar:sonar \
@@ -263,5 +336,5 @@ docker compose up -d
   -DfailIfNoTests=false
 
 # 6. View results → http://localhost:9000
-# 7. View pipeline → http://localhost:8080 → Open Blue Ocean
+# 7. View pipeline → http://localhost:8080/blue
 ```
