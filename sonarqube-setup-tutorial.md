@@ -146,7 +146,7 @@ Note: The SonarQube Scanner plugin is required for the SonarQube servers section
 
 ### 6.5 Create the Pipeline in Blue Ocean
 
-1. Click **Open Blue Ocean** in the left Jenkins sidebar
+1. open http://localhost:8080/blue to launch blue ocean
 2. Click **New Pipeline**
 3. Select **Git** as the source
 4. Enter the repository URL:
