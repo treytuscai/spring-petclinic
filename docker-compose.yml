@@ -35,17 +35,31 @@ services:
       - postgres
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: jenkins/Dockerfile
+    container_name: jenkins
     ports:
       - "8080:8080"
       - "50000:50000"
+    environment:
+      - PROMETHEUS_ENDPOINT=prometheus
+      - COLLECTING_METRICS_PERIOD_IN_SECONDS=30
+      - COLLECT_DISK_USAGE=true
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - devsecops-net
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     ports:
       - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - jenkins
     networks:
       - devsecops-net
 
