@@ -41,6 +41,26 @@ Jenkinsfile
 
 <img width="1922" height="924" alt="image" src="https://github.com/user-attachments/assets/9acbeb8d-da52-4052-aff0-f88a8cff0a24" />
 
+## Automated Dastardly Scan
+
+This branch adds an automated Dastardly scan to the Jenkins pipeline after the SonarQube quality gate.
+
+To run the local Jenkins service with Docker CLI support for the DAST stages:
+
+```bash
+docker compose up -d --build jenkins
+```
+
+During the pipeline Jenkins:
+
+1. packages the application jar for scanning
+2. builds the disposable runtime image from `docker/petclinic-runtime.Dockerfile`
+3. starts a temporary `petclinic-qa` container on an isolated Docker network
+4. runs `public.ecr.aws/portswigger/dastardly:latest` against `http://petclinic-qa:8080/`
+5. archives `dastardly-reports/dastardly-report.xml` and `dastardly-reports/dastardly.log`
+
+The initial rollout is report-only. Dastardly findings are captured and archived without failing the rest of the pipeline.
+
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
 
