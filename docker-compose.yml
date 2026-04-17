@@ -46,6 +46,8 @@ services:
       - PROMETHEUS_ENDPOINT=prometheus
       - COLLECTING_METRICS_PERIOD_IN_SECONDS=30
       - COLLECT_DISK_USAGE=true
+      context: ./jenkins
+    user: root
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
