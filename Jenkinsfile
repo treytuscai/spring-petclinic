@@ -6,8 +6,6 @@ pipeline {
     }
 
     options {
-        timestamps()    // Adds timestamps to the Jenkins console log.
-
         disableConcurrentBuilds() // Prevents two builds of this same pipeline from running at the same time
     }
 
