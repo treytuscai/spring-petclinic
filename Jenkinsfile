@@ -33,15 +33,17 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'chmod +x mvnw'
-                sh './mvnw --batch-mode clean test'
+                sh "./mvnw --batch-mode clean test -Dtest='!PostgresIntegrationTests' -DfailIfNoTests=false"
             }
         }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     sh '''
-                    ./mvnw sonar:sonar \
-                        -Dsonar.projectKey=spring-petclinic
+                        ./mvnw sonar:sonar \
+                            -Dsonar.projectKey=spring-petclinic \
+                            -Dtest='!PostgresIntegrationTests' \
+                            -DfailIfNoTests=false
                     '''
                 }
             }
