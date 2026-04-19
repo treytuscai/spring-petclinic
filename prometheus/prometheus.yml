@@ -9,7 +9,7 @@ scrape_configs:
           - prometheus:9090
 
   - job_name: jenkins
-    metrics_path: /prometheus/
+    metrics_path: /prometheus
     scrape_interval: 15s
     static_configs:
       - targets:
