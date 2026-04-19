@@ -11,6 +11,8 @@ services:
       - MYSQL_DATABASE=petclinic
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
+    networks:
+      - devsecops-net
 
   postgres:
     image: postgres:16
@@ -22,9 +24,12 @@ services:
       - POSTGRES_DB=petclinic
     volumes:
       - "./init-sonar.sql:/docker-entrypoint-initdb.d/init-sonar.sql"
+    networks:
+      - devsecops-net
 
   sonarqube:
     image: sonarqube:lts-community
+    container_name: sonarqube
     ports:
       - "9000:9000"
     environment:
@@ -33,12 +38,15 @@ services:
       - SONAR_JDBC_PASSWORD=petclinic
     depends_on:
       - postgres
+    networks:
+      - devsecops-net
 
   jenkins:
     build:
       context: .
       dockerfile: jenkins/Dockerfile
     container_name: jenkins
+    restart: unless-stopped
     ports:
       - "8080:8080"
       - "50000:50000"
@@ -46,13 +54,13 @@ services:
       - PROMETHEUS_ENDPOINT=prometheus
       - COLLECTING_METRICS_PERIOD_IN_SECONDS=30
       - COLLECT_DISK_USAGE=true
-      context: ./jenkins
     user: root
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - devsecops-net
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -60,8 +68,6 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    depends_on:
-      - jenkins
     networks:
       - devsecops-net
 
