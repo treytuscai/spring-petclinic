@@ -33,7 +33,11 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'chmod +x mvnw'
-                sh "./mvnw --batch-mode clean test -Dtest='!PostgresIntegrationTests' -DfailIfNoTests=false"
+                sh '''
+                    ./mvnw --batch-mode clean test \
+                        -Dtest='!PostgresIntegrationTests' \
+                        -DfailIfNoTests=false
+                '''
             }
         }
         stage('SonarQube Analysis') {
