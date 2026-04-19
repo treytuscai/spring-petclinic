@@ -49,7 +49,11 @@ Run a Linux Production Server Container
 ```bash
 cd prod-server/
 
+# Build the production server image
 docker build -t petclinic-prod-server .
+
+# Run the container in detached mode
+# Runs a background Docker container named petclinic-prod, exposing SSH on port 2222 for Ansible access and the web app on port 8082 for browser access.
 docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-server
 
 # If already exists
@@ -58,14 +62,35 @@ docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-serve
 
 Install Ansible Where Jenkins Can Use It
 ```bash
+
 docker exec -u root -it jenkins bash
+# Install Ansible & sshpass in Jenkins container
 apt-get update
 apt-get install -y ansible sshpass
+
 exit
 ```
+## CI/CD Flow (What Happens After a Commit)
 
-If some new commit appeared. After Jenkins runs successfully, open:
-http://localhost:8082
+When a new commit is pushed:
+
+- Jenkins pipeline is triggered
+  
+- Jenkins:
+  - Pulls latest code
+  - Builds Docker image (if needed)
+  - Runs Ansible playbook
+
+- Ansible:
+  - Connects to `localhost:2222` (production container)
+  - Deploys the updated application
+
+- Application is updated inside the container
+
+
+After successful deployment:
+
+Open in browser: http://localhost:8082
 
 
 
