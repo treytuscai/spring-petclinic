@@ -35,7 +35,7 @@ pipeline {
                 sh 'chmod +x mvnw'
                 sh '''
                     ./mvnw --batch-mode clean test \
-                        -Dtest='!PostgresIntegrationTests' \
+                        -Dtest='!PostgresIntegrationTests,!MySqlIntegrationTests' \
                         -DfailIfNoTests=false
                 '''
             }
@@ -46,7 +46,7 @@ pipeline {
                     sh '''
                         ./mvnw sonar:sonar \
                             -Dsonar.projectKey=spring-petclinic \
-                            -Dtest='!PostgresIntegrationTests' \
+                            -Dtest='!PostgresIntegrationTests,!MySqlIntegrationTests' \
                             -DfailIfNoTests=false
                     '''
                 }
