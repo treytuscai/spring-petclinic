@@ -53,9 +53,23 @@ Plugins are installed at Docker image build time via `plugins.txt` and the `jenk
 - `git`: Git SCM support
 - `workflow-aggregator`: Pipeline plugin suite
 
+## Prerequisites
+
+Assumes a fresh Ubuntu VM with nothing installed. Run the following and then log out and back in for the Docker group to take effect:
+
+```bash
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+sudo apt-get install -y git
+```
+
 ## Usage
 
 ```bash
+git clone https://github.com/treytuscai/spring-petclinic.git
+cd spring-petclinic
+git checkout feature/integration
+chmod +x setup.sh
 ./setup.sh
 ```
 
@@ -72,3 +86,13 @@ Once complete:
 ## Note on Dastardly (DAST Scan)
 
 Dastardly only ships an x86 (amd64) Docker image. It works on x86 machines and through Docker Desktop on macOS. If running on a Linux VM on an ARM Mac (e.g. UTM), the VM must use the Apple Virtualization backend with Rosetta enabled. Standard QEMU emulation cannot run Dastardly's embedded Chromium browser.
+
+Once enabled in UTM, register it inside the guest:
+> ```bash
+> sudo apt-get install -y binfmt-support
+> sudo /usr/sbin/update-binfmts --install rosetta /mnt/rosetta/rosetta \
+>    --magic "\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00" \
+>    --mask "\xff\xff\xff\xff\xff\xfe\xfe\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff" \
+>    --preserve yes --fix-binary yes
+> ```
+> Without this, the pipeline will skip the Dastardly stages.
