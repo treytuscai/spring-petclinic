@@ -50,7 +50,7 @@ jobs:
                 remote {
                   url('https://github.com/treytuscai/spring-petclinic.git')
                 }
-                branches('*/automated')
+                branches('*/feature/integration')
               }
             }
             scriptPath('Jenkinsfile')
