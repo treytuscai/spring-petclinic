@@ -8,7 +8,8 @@ docker run -d --name jenkins \
   -p 8081:8080 -p 50000:50000 \
   jenkins/jenkins:lts
 
-## docker start jenkins
+# If already exists
+# docker start jenkins
 
 ```
 Open http://localhost:8081 to access Jenkins dashboard
@@ -60,6 +61,58 @@ During the pipeline Jenkins:
 5. archives `dastardly-reports/dastardly-report.xml` and `dastardly-reports/dastardly.log`
 
 The initial rollout is report-only. Dastardly findings are captured and archived without failing the rest of the pipeline.
+
+
+##  Ansible on Jenkins
+
+Run a Linux Production Server Container
+```bash
+cd prod-server/
+
+# Build the production server image
+docker build -t petclinic-prod-server .
+
+# Run the container in detached mode
+# Runs a background Docker container named petclinic-prod, exposing SSH on port 2222 for Ansible access and the web app on port 8082 for browser access.
+docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-server
+
+# If already exists
+# docker start petclinic-prod
+```
+
+Install Ansible Where Jenkins Can Use It
+```bash
+
+docker exec -u root -it jenkins bash
+# Install Ansible & sshpass in Jenkins container
+apt-get update
+apt-get install -y ansible sshpass
+
+exit
+```
+## CI/CD Flow (What Happens After a Commit)
+
+When a new commit is pushed:
+
+- Jenkins pipeline is triggered
+  
+- Jenkins:
+  - Pulls latest code
+  - Builds Docker image (if needed)
+  - Runs Ansible playbook
+
+- Ansible:
+  - Connects to `localhost:2222` (production container)
+  - Deploys the updated application
+
+- Application is updated inside the container
+
+
+After successful deployment:
+
+Open in browser: http://localhost:8082
+
+
 
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)

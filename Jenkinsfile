@@ -150,6 +150,18 @@ pipeline {
                 archiveArtifacts allowEmptyArchive: true, artifacts: 'dastardly-reports/**'
             }
         }
+
+        stage('Package') {
+            steps {
+                sh './mvnw --batch-mode package -DskipTests'
+            }
+        }
+
+        stage('Deploy to Prod') {
+            steps {
+                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.ini ansible/deploy.yml'
+            }
+        }
     }
 
     post {
