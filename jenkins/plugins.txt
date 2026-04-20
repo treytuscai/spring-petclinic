@@ -1,1 +1,7 @@
 prometheus
+blueocean
+sonar
+git
+workflow-aggregator
+configuration-as-code
+job-dsl
