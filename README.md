@@ -47,6 +47,7 @@ All services (Jenkins, SonarQube, Prometheus, Grafana) are defined in `docker-co
 ```bash
 git clone https://github.com/treytuscai/spring-petclinic.git
 cd spring-petclinic
+git checkout feature/integration
 ```
 
 ### 0.2 Start All Services
