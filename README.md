@@ -314,7 +314,7 @@ If Prometheus is not listed:
 
 ### 5.3 View Jenkins Dashboard
 
-Navigate to **Dashboards** -> **Jenkins** folder -> **Jenkins: Performance and Health Overview**
+Navigate to **Dashboards** -> **Jenkins** folder -> **Jenkins Overview**
 
 The dashboard itself (`jenkins-dashboard.json`) queries Prometheus for metrics exposed by the **Prometheus Metrics plugin** running inside Jenkins (installed via the Jenkins Dockerfile).
 
