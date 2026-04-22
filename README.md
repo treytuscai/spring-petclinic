@@ -63,9 +63,13 @@ During the pipeline Jenkins:
 The initial rollout is report-only. Dastardly findings are captured and archived without failing the rest of the pipeline.
 
 
-##  Ansible on Jenkins
+##  Ansible Deployment on Jenkins
+A separate Docker container acts as the production server, which hosts the Spring Petclinic application.
 
-Run a Linux Production Server Container
+When a developer pushes new code to the repository, Jenkins automatically triggers the pipeline, retrieves the latest code, and runs an Ansible playbook. The playbook connects to the production server container through SSH and deploys the updated application.
+
+# Step 1: Start the Production Server Containe
+First, create and run a separate container that will act as the production server.
 ```bash
 cd prod-server/
 
@@ -75,42 +79,70 @@ docker build -t petclinic-prod-server .
 # Run the container in detached mode
 # Runs a background Docker container named petclinic-prod, exposing SSH on port 2222 for Ansible access and the web app on port 8082 for browser access.
 docker run -d --name petclinic-prod -p 2222:22 -p 8082:8080 petclinic-prod-server
+```
+Explanation
+- -p 2222:22 maps port 2222 on the host to port 22 inside the container, so Ansible can connect through SSH.
+- -p 8082:8080 maps port 8082 on the host to port 8080 inside the container, so the deployed web app can be accessed from a browser.
+- The container name is petclinic-prod
 
-# If already exists
-# docker start petclinic-prod
+If the container was already created previously, it can be started again with:
+```bash
+docker start petclinic-prod
 ```
 
-Install Ansible Where Jenkins Can Use It
-```bash
+# Step 2: Install Ansible Inside the Jenkins Containe
+Jenkins needs Ansible in order to run deployment playbooks. Since Jenkins is running inside a container, Ansible must be installed there.
 
+```bash
 docker exec -u root -it jenkins bash
 # Install Ansible & sshpass in Jenkins container
 apt-get update
 apt-get install -y ansible sshpass
-
 exit
 ```
-## CI/CD Flow (What Happens After a Commit)
+Explanation
+- docker exec -u root -it jenkins bash opens a shell inside the Jenkins container as the root user.
+- ansible is required to run playbooks.
+- sshpass allows password-based SSH authentication.
 
-When a new commit is pushed:
+# Step 3: Verify Jenkins Can Reach the Production Server
+Before running the pipeline, confirm that Jenkins can connect to the production container through SSH.
 
-- Jenkins pipeline is triggered
+From inside the Jenkins container, test the connection:
+```bash
+ssh -p 2222 <username>@host.docker.internal
+```
+
+# Step 4: Configure the Ansible Inventory
+Create an Ansible inventory file that points to the production server container.
+```bash
+[prod]
+petclinic-prod ansible_host=petclinic-prod ansible_port=22 ansible_user=deployer ansible_password=deployer ansible_connection=ssh
+```
+Explanation
+- ansible_host=host.docker.internal allows the Jenkins container to reach the host machine
+- ansible_port=22 points to the mapped SSH port of the production container
+- ansible_user and ansible_password are the SSH login credentials inside the production server container
+
+# Step 5: Create the Ansible Playbook
+The playbook contains the deployment steps executed by Jenkins.
+
+Responsibilities of the playbook include:
+
+- connecting to the production container
+- copying deployment files or pulling the newest code
+- restarting the application or container
+- confirming the service is running
+
+# Step 6: Configure the Jenkins Pipeline
+The Jenkins pipeline is set up to automatically run after each commit to run Ansible deployment playbook
   
-- Jenkins:
-  - Pulls latest code
-  - Builds Docker image (if needed)
-  - Runs Ansible playbook
-
-- Ansible:
-  - Connects to `localhost:2222` (production container)
-  - Deploys the updated application
-
-- Application is updated inside the container
-
-
-After successful deployment:
-
-Open in browser: http://localhost:8082
+# Step 7: Verify Successful Deployment
+After the pipeline finishes successfully, open the application in a browser:
+```bash
+http://localhost:8082
+```
+If the deployment succeeded, the updated Spring Petclinic application should be visible there.
 
 
 
