@@ -68,7 +68,7 @@ A separate Docker container acts as the production server, which hosts the Sprin
 
 When a developer pushes new code to the repository, Jenkins automatically triggers the pipeline, retrieves the latest code, and runs an Ansible playbook. The playbook connects to the production server container through SSH and deploys the updated application.
 
-# Step 1: Start the Production Server Containe
+### Step 1: Start the Production Server Containe
 First, create and run a separate container that will act as the production server.
 ```bash
 cd prod-server/
@@ -90,7 +90,7 @@ If the container was already created previously, it can be started again with:
 docker start petclinic-prod
 ```
 
-# Step 2: Install Ansible Inside the Jenkins Containe
+### Step 2: Install Ansible Inside the Jenkins Containe
 Jenkins needs Ansible in order to run deployment playbooks. Since Jenkins is running inside a container, Ansible must be installed there.
 
 ```bash
@@ -105,7 +105,7 @@ Explanation
 - ansible is required to run playbooks.
 - sshpass allows password-based SSH authentication.
 
-# Step 3: Verify Jenkins Can Reach the Production Server
+### Step 3: Verify Jenkins Can Reach the Production Server
 Before running the pipeline, confirm that Jenkins can connect to the production container through SSH.
 
 From inside the Jenkins container, test the connection:
@@ -113,7 +113,7 @@ From inside the Jenkins container, test the connection:
 ssh -p 2222 <username>@host.docker.internal
 ```
 
-# Step 4: Configure the Ansible Inventory
+### Step 4: Configure the Ansible Inventory
 Create an Ansible inventory file that points to the production server container.
 ```bash
 [prod]
@@ -124,7 +124,7 @@ Explanation
 - ansible_port=22 points to the mapped SSH port of the production container
 - ansible_user and ansible_password are the SSH login credentials inside the production server container
 
-# Step 5: Create the Ansible Playbook
+### Step 5: Create the Ansible Playbook
 The playbook contains the deployment steps executed by Jenkins.
 
 Responsibilities of the playbook include:
@@ -134,10 +134,10 @@ Responsibilities of the playbook include:
 - restarting the application or container
 - confirming the service is running
 
-# Step 6: Configure the Jenkins Pipeline
+### Step 6: Configure the Jenkins Pipeline
 The Jenkins pipeline is set up to automatically run after each commit to run Ansible deployment playbook
   
-# Step 7: Verify Successful Deployment
+### Step 7: Verify Successful Deployment
 After the pipeline finishes successfully, open the application in a browser:
 ```bash
 http://localhost:8082
