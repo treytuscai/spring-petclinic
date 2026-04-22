@@ -312,14 +312,11 @@ If Prometheus is not listed:
 
 > ⚠️ **Important:** Use `http://prometheus:9090` (not `localhost:9090`) because Grafana communicates with Prometheus inside the Docker network.
 
-### 5.3 Import the Jenkins Dashboard
+### 5.3 View Jenkins Dashboard
 
-1. In Grafana, go to **Dashboards → Import**
-2. In the **Import via grafana.com** field, enter dashboard ID `9964` *(Jenkins: Performance and Health Overview)* and click **Load**
-3. Select your Prometheus data source from the dropdown
-4. Click **Import**
+Navigate to **Dashboards** -> **Jenkins** folder -> **Jenkins: Performance and Health Overview**
 
-The dashboard will now display Jenkins build durations, queue lengths, executor usage, and other pipeline metrics in real time.
+The dashboard itself (`jenkins-dashboard.json`) queries Prometheus for metrics exposed by the **Prometheus Metrics plugin** running inside Jenkins (installed via the Jenkins Dockerfile).
 
 ---
 
