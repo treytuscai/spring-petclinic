@@ -15,8 +15,8 @@ This guide sets up a complete DevSecOps pipeline including:
 **Overall flow:**
 
 ```
-git push → Jenkins detects change → Build & Test → SonarQube analysis
-→ Quality Gate check → Dastardly DAST scan → Package → Ansible deploy to prod
+git push -> Jenkins detects change -> Build & Test -> SonarQube analysis
+-> Quality Gate check -> Dastardly DAST scan -> Package -> Ansible deploy to prod
 ```
 
 ---
@@ -65,7 +65,7 @@ This starts the following containers:
 | Prometheus | http://localhost:9090    | Metrics collection   |
 | Grafana    | http://localhost:3000    | Metrics dashboard    |
 
-> ⏳ Wait about **60–90 seconds** for all services to fully initialize before proceeding.
+> Wait about **60–90 seconds** for all services to fully initialize before proceeding.
 
 To check that all containers are running:
 
@@ -92,7 +92,7 @@ Log in with the default credentials:
 - **Username:** `admin`
 - **Password:** `admin`
 
-> 📝 **Note:** The `initialAdminPassword` file will not exist because CasC bypasses the standard setup wizard. All plugins, credentials, and the pipeline job are automatically configured on startup.
+> **Note:** The `initialAdminPassword` file will not exist because CasC bypasses the standard setup wizard. All plugins, credentials, and the pipeline job are automatically configured on startup.
 
 ---
 
@@ -111,14 +111,14 @@ On first login, SonarQube will prompt you to change the default password. Set a 
 
 Jenkins needs a token to authenticate with SonarQube:
 
-1. Click your avatar (top-right) → **My Account**
+1. Click your avatar (top-right) -> **My Account**
 2. Go to the **Security** tab
 3. Under **Generate Tokens**, select `Global Analysis Token`, enter a name (e.g. `petclinic-token`), and click **Generate**
 4. Copy the token immediately — it will not be shown again
 
 ### 2.3 Add the SonarQube Token to Jenkins Credentials
 
-1. In Jenkins, go to **Manage Jenkins → Credentials → System → Global credentials → Add Credentials**
+1. In Jenkins, go to **Manage Jenkins -> Credentials -> System -> Global credentials -> Add Credentials**
 2. Fill in:
    - **Kind:** `Secret text`
    - **Secret:** paste your SonarQube token from Step 2.2
@@ -128,7 +128,7 @@ Jenkins needs a token to authenticate with SonarQube:
 
 ### 2.4 Configure the SonarQube Server in Jenkins
 
-1. Go to **Manage Jenkins → System**
+1. Go to **Manage Jenkins -> System**
 2. Scroll down to **SonarQube servers** and click **Add SonarQube**
 3. Fill in:
    - **Name:** `SonarQube`
@@ -136,7 +136,7 @@ Jenkins needs a token to authenticate with SonarQube:
    - **Server authentication token:** select `sonar-token` from the dropdown
 4. Click **Save**
 
-> ⚠️ **Important:** Use `http://sonarqube:9000` (not `localhost:9000`) because Jenkins and SonarQube communicate inside the Docker network by container name.
+> **Important:** Use `http://sonarqube:9000` (not `localhost:9000`) because Jenkins and SonarQube communicate inside the Docker network by container name.
 
 ### 2.5 Set Up the Webhook for Quality Gate Callback
 
@@ -146,23 +146,20 @@ The Quality Gate stage in the pipeline requires SonarQube to notify Jenkins when
 
 ```
 Jenkins triggers SonarQube analysis
-       ↓
 SonarQube runs the scan
-       ↓
-SonarQube calls Jenkins via webhook → "analysis done, here's the result"
-       ↓
-Jenkins marks Quality Gate as passed ✅ or failed ❌
+SonarQube calls Jenkins via webhook -> "analysis done, here's the result"
+Jenkins marks Quality Gate as passed or failed
 ```
 
 **Steps:**
 
-1. In SonarQube, go to **Administration → Configuration → Webhooks**
+1. In SonarQube, go to **Administration -> Configuration -> Webhooks**
 2. Click **Create** and fill in:
    - **Name:** `Jenkins`
    - **URL:** `http://jenkins:8080/sonarqube-webhook/`
 3. Click **Create**
 
-> ⚠️ **Important:** Use `http://jenkins:8080` (not `localhost:8080`) so SonarQube can reach Jenkins inside the Docker network.
+> **Important:** Use `http://jenkins:8080` (not `localhost:8080`) so SonarQube can reach Jenkins inside the Docker network.
 
 ---
 
@@ -183,8 +180,8 @@ docker ps | grep petclinic-prod
 ```
 
 It exposes:
-- Port `2222` → SSH (for Ansible access)
-- Port `8082` → the deployed web app
+- Port `2222` -> SSH (for Ansible access)
+- Port `8082` -> the deployed web app
 
 ### 3.2 Install Ansible Inside the Jenkins Container
 
@@ -216,7 +213,7 @@ ssh -p 2222 deployer@host.docker.internal
 
 Password: `deployer`
 
-> ⚠️ **Important:** Run this from inside the Jenkins container, not from your Mac terminal. `host.docker.internal` only resolves from within a Docker container.
+> **Important:** Run this from inside the Jenkins container, not from your Mac terminal. `host.docker.internal` only resolves from within a Docker container.
 
 Type `exit` to close the SSH session and return to the Jenkins container shell, then `exit` again to leave the container.
 
@@ -254,7 +251,7 @@ After the pipeline finishes successfully, open the application in a browser:
 http://localhost:8082
 ```
 
-> 📝 **Note:** `localhost:8082` will not be accessible until the pipeline has completed at least one successful run including the Ansible deploy stage. If the page shows a connection error, check the pipeline status in Jenkins first.
+> **Note:** `localhost:8082` will not be accessible until the pipeline has completed at least one successful run including the Ansible deploy stage. If the page shows a connection error, check the pipeline status in Jenkins first.
 
 ---
 
@@ -265,16 +262,16 @@ Prometheus is already started by `docker compose up` and pre-configured to scrap
 ### 4.1 Verify Prometheus is Scraping Jenkins
 
 1. Open http://localhost:9090
-2. Click **Status → Targets**
+2. Click **Status -> Targets**
 3. Confirm that the `jenkins` target shows **UP**
 
 If the Jenkins target shows **DOWN**, make sure Jenkins is fully started (wait 60–90 seconds) and that the Prometheus metrics plugin is active.
 
 ### 4.2 Enable the Prometheus Metrics Endpoint in Jenkins
 
-1. In Jenkins, go to **Manage Jenkins → System**
+1. In Jenkins, go to **Manage Jenkins -> System**
 2. Scroll down to the **Prometheus** section
-3. Confirm the endpoint is enabled at `/prometheus/` (this should already be active after installing the plugin)
+3. Confirm the endpoint is enabled at `/prometheus` (this should already be active after installing the plugin)
 4. Click **Save**
 
 You can manually verify the metrics endpoint is live:
@@ -300,17 +297,17 @@ Open http://localhost:3000 and log in with the default credentials:
 
 ### 5.2 Verify the Prometheus Data Source
 
-1. Go to **Connections → Data sources**
+1. Go to **Connections -> Data sources**
 2. Confirm **Prometheus** is listed and click on it
 3. Scroll down and click **Save & test** — you should see `"Data source is working"`
 
 If Prometheus is not listed:
 
-1. Click **Add data source → Prometheus**
+1. Click **Add data source -> Prometheus**
 2. Set **Prometheus server URL** to `http://prometheus:9090`
 3. Click **Save & test**
 
-> ⚠️ **Important:** Use `http://prometheus:9090` (not `localhost:9090`) because Grafana communicates with Prometheus inside the Docker network.
+> **Important:** Use `http://prometheus:9090` (not `localhost:9090`) because Grafana communicates with Prometheus inside the Docker network.
 
 ### 5.3 View Jenkins Dashboard
 
@@ -340,7 +337,7 @@ After a pipeline run completes:
 2. Click **Artifacts** in the left sidebar
 3. Download or view `dastardly-reports/dastardly-report.xml`
 
-> 📝 **Note:** Dastardly findings currently do not fail the pipeline (report-only mode). The exit code is captured and logged so you can review findings without blocking deployments.
+> **Note:** Dastardly findings currently do not fail the pipeline (report-only mode). The exit code is captured and logged so you can review findings without blocking deployments.
 
 ---
 
@@ -363,9 +360,9 @@ git push
 **Expected pipeline stages:**
 
 ```
-Checkout → Build and Test → SonarQube Analysis → Quality Gate
-→ Package for DAST → Build QA Image → Start QA Target
-→ Run Dastardly Scan → Archive Results → Package → Deploy to Prod
+Checkout -> Build and Test -> SonarQube Analysis -> Quality Gate
+-> Package for DAST -> Build QA Image -> Start QA Target
+-> Run Dastardly Scan -> Archive Results -> Package -> Deploy to Prod
 ```
 
 5. After the pipeline completes, verify the change is live at http://localhost:8082
